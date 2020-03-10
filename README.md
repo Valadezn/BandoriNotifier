@@ -1,6 +1,6 @@
 # BandoriNotifier
 
-Windows notifier that sends toast notifications about how much time is left in a Ban
+Windows notifier that sends toast notifications about how much time is left in a Bandori event
 
 ## Installation
 
