@@ -8,9 +8,9 @@ Must have the following libaries installed before running: requests_html,
 Author: Noemi Valadez-Monarrez
 """
 
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 from win10toast import ToastNotifier
-from urllib.request import Request, urlopen
+#from urllib.request import Request, urlopen
 from requests_html import HTMLSession
 import re
 import json
@@ -45,8 +45,38 @@ def sendToast(message: str) -> None:
 
 	# Creates a ToastNotifier object and send message 
 	toaster = ToastNotifier()
-	toaster.show_toast("Sample Notification",message)
+	toaster.show_toast("Sample Notification",message, duration=10, threaded=True)
 
+def formatDivString(element_text: str) -> str:
+	"""
+	Determines what event deadline element_text describes and formats
+		string 
+	
+	Args:
+		element_text (str): Text
+		
+	Returns:
+		message: Formatted message for specific event (with time
+	"""
+	
+	# TODO: add regex to only obtain 
+	
+	# If the event is going to end
+	if "Ends" in element_text:
+		timestamp_pattern = r'Ends in ([a-zA-Z0-9 ]*)'
+		matches = re.search(timestamp_pattern, element_text)
+		return "Event ending|" + matches.group(1)
+	
+	# If the event is going to start
+	elif "Starts" in element_text:
+		timestamp_pattern = r'Starts in ([a-zA-Z0-9 ]*)'
+		matches = re.search(timestamp_pattern, element_text)
+		return "EVent starting|" + matches.group(1)
+	
+	# If the event has not started and a date hasn't been determined
+	elif "Not" in element_text:
+		return "Event hast started and date not determined" + element_text
+	
 
 def getTimeStampsData() -> dict:
 	"""
@@ -69,7 +99,9 @@ def getTimeStampsData() -> dict:
 	#	HTML code
 	resp.html.render(sleep=2)
 
-	# Search for HTML div IDs in HTML code
+	# Search for specific HTML div elements in HTML code
+	# Via Bestdori's HTML code, event info is stored under IDs
+	#	".title.is-6" and ".subtitle.is-6"
 	event_name_elements = resp.html.find(".title.is-5")
 	timestamp_elements = resp.html.find(".subtitle.is-6")
 
@@ -82,8 +114,9 @@ def getTimeStampsData() -> dict:
 	# HTML text to be skipped 
 	skip_texts = {"Bestdori! - The Ultimate BanG Dream GBP Resource Site", 
 				"News", "Support Us", "Support Bestdori!"}
-
-	# Storing text from div containers into lists
+	
+	# Storing text from div containers into lists and
+	#	 skipping elements we do not need
 	for el in event_name_elements:
 		if el.text not in skip_texts:
 			event_titles.append(el.text)
@@ -115,6 +148,7 @@ def getTimeStampsData() -> dict:
 	return timestamps_dict
 
 def sendTimeStamp(servers: list) -> None: 
+	# IDEA: Use formatDivString here for message that will be sent
 	
 	list_servers = servers
 	timestamps_data = getTimeStampsData()
