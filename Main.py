@@ -155,12 +155,21 @@ def sendTimeStamp(servers: list) -> None:
 
 
 if __name__ == "__main__":
-	# At what frequency did you want to send the toast?
+	# Runs when only Main.py is ran first
+	# TODO: Make GUI that sets setting and runs Main.py
 	
 	# Obtain settings from settings.json
 	settings = readSettings()
+	
+	
 	# TODO: Add frequency settings to settings.json (e.g. how frequently 
 	#	does the user want the toast to be sent)
+	# Daily? Hourly? 4 times a day? Twice a day?
+	# 24 = hourly (once every hour); 4 = 4 times a day; 2 = 2 times a day; 1 = 1 time a day
+	
+	# IDEA:
+	# Ask the user: at what time do you want to be notified?
+	# Then notify at that time and at each increment based on the frequency setting  
 	
 	sendTimeStamp(settings["servers"])
 	# sendToast("It worked!")
