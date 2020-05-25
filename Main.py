@@ -12,8 +12,7 @@ Author: Noemi Valadez-Monarrez
 from win10toast import ToastNotifier
 #from urllib.request import Request, urlopen
 from requests_html import HTMLSession
-import re
-import json
+import re, json, time
 
 def readSettings(filename = "settings.json") -> dict:
 	"""
@@ -30,7 +29,7 @@ def readSettings(filename = "settings.json") -> dict:
 	settings_dict = json.load(settings_file)
 	return settings_dict
 
-def sendToast(message: str) -> None:
+def sendToast(title: str, message: str) -> None:
 	"""
 	Sends a Windows Toast notification with a defined message
 	
@@ -45,7 +44,10 @@ def sendToast(message: str) -> None:
 
 	# Creates a ToastNotifier object and send message 
 	toaster = ToastNotifier()
-	toaster.show_toast("Sample Notification",message, duration=10, threaded=True)
+	try: 
+		toaster.show_toast(title, message, icon_path="bandori_star_ico.ico", duration=10, threaded=True)
+	except AttributeError:
+		pass
 
 def formatDivString(element_text: str) -> str:
 	"""
@@ -65,17 +67,17 @@ def formatDivString(element_text: str) -> str:
 	if "Ends" in element_text:
 		timestamp_pattern = r'Ends in ([a-zA-Z0-9 ]*)'
 		matches = re.search(timestamp_pattern, element_text)
-		return "Event ending|" + matches.group(1)
+		return "Event ending in " + matches.group(1)
 	
 	# If the event is going to start
 	elif "Starts" in element_text:
 		timestamp_pattern = r'Starts in ([a-zA-Z0-9 ]*)'
 		matches = re.search(timestamp_pattern, element_text)
-		return "EVent starting|" + matches.group(1)
+		return "Event starting in " + matches.group(1)
 	
 	# If the event has not started and a date hasn't been determined
 	elif "Not" in element_text:
-		return "Event hast started and date not determined" + element_text
+		return "Event hast started and date not determined " + element_text
 	
 
 def getTimeStampsData() -> dict:
@@ -126,10 +128,10 @@ def getTimeStampsData() -> dict:
 			timestamp_texts.append(el.text)
 
 	
-	for i in range(len(event_titles)):
-		print("{} - {}".format(event_titles[i], timestamp_texts[i]))
-
-	print("___")
+# 	for i in range(len(event_titles)):
+# 		print("{} - {}".format(event_titles[i], timestamp_texts[i]))
+# 
+# 	print("___")
 	
 	
 	# Dict is in the format of {server, (event_title, timestamp_text)}
@@ -151,9 +153,17 @@ def sendTimeStamp(servers: list) -> None:
 	# IDEA: Use formatDivString here for message that will be sent
 	
 	list_servers = servers
+	#print(list_servers)
 	timestamps_data = getTimeStampsData()
-
-
+	#print(timestamps_data)
+	for server in list_servers:
+		print(server)
+		#print(timestamps_data[server])
+		#print(timestamps_data[server][0])
+		#print(timestamps_data[server][1])
+		sendToast("{} event - {} ".format(server, timestamps_data[server][0]),  formatDivString(timestamps_data[server][1]))
+		print("{} event - {} ".format(server, timestamps_data[server][0]),  formatDivString(timestamps_data[server][1]))
+		time.sleep(60)
 if __name__ == "__main__":
 	# Runs when only Main.py is ran first
 	# TODO: Make GUI that sets setting and runs Main.py
@@ -170,7 +180,9 @@ if __name__ == "__main__":
 	# IDEA:
 	# Ask the user: at what time do you want to be notified?
 	# Then notify at that time and at each increment based on the frequency setting  
-	
-	sendTimeStamp(settings["servers"])
+	interval = 60  	# 60 sec * 60 min
+	while True:
+		sendTimeStamp(settings["servers"])
+		time.sleep(interval)
 	# sendToast("It worked!")
 	# jsTest()
