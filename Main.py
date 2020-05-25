@@ -180,7 +180,7 @@ if __name__ == "__main__":
 	# IDEA:
 	# Ask the user: at what time do you want to be notified?
 	# Then notify at that time and at each increment based on the frequency setting  
-	interval = 60  	# 60 sec * 60 min
+	interval = 60 * 60 	# 60 sec * 60 min
 	while True:
 		sendTimeStamp(settings["servers"])
 		time.sleep(interval)
