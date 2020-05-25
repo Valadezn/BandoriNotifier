@@ -564,3 +564,6 @@ MigrationBackup/
 .vscode/launch.json
 
 # End of https://www.gitignore.io/api/python,windows,eclipse,visualstudio,visualstudiocode
+TimestampTest.py
+.pylintrc
+bandori start icon.png
