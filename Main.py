@@ -47,6 +47,7 @@ def sendToast(title: str, message: str) -> None:
 	try: 
 		toaster.show_toast(title, message, icon_path="bandori_star_ico.ico", duration=10, threaded=True)
 	except AttributeError:
+		# Exception is raised due to error in win10toast source code
 		pass
 
 def formatDivString(element_text: str) -> str:
@@ -157,7 +158,7 @@ def sendTimeStamp(servers: list) -> None:
 	timestamps_data = getTimeStampsData()
 	#print(timestamps_data)
 	for server in list_servers:
-		print(server)
+		#print(server)
 		#print(timestamps_data[server])
 		#print(timestamps_data[server][0])
 		#print(timestamps_data[server][1])
